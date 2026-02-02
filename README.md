@@ -1,40 +1,160 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+# 👋 I'm Kushal Ghosh
+
+### Full-Stack Developer | B.Tech CSE @ BCET
+
+**Quick Bio:**
+I am a final-year B.Tech CSE student and a passionate problem solver. I specialize in building scalable web applications using the **MERN Stack**, **Java**, and **Spring Boot**. With a 5-star rating in Java on HackerRank and internships at **CodTech** and **Snestron Systems**, I focus on high-performance, responsive solutions.
+
+### 🛠️ Tech Stack
+
+* **Languages:** Java (5⭐), JavaScript, SQL
+* **Frameworks:** React.js, Next.js, Spring Boot, Node.js
+* **Databases:** PostgreSQL, MySQL, MongoDB
+* **Tools:** Docker, RabbitMQ, Git
+
+------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+`# 🛒 Kushal Store - Microservices & Dockerized E-commerce`
+
+This is a modern full-stack e-commerce application built with **Next.js** and **PostgreSQL**. The architecture is designed with **Microservices** principles, using **RabbitMQ** for event-driven communication and **Docker** for infrastructure orchestration.
+
+---
+
+## 🏗️ Architecture & Implementation Details
+
+This project demonstrates a decoupled architecture where the frontend and backend communicate through APIs and asynchronous messaging:
+
+1. **`index.js` (Frontend):** A responsive storefront built with Next.js, using React hooks (`useEffect`, `useState`) to fetch and display products in real-time.
+2. **`lib/db.js` (The Bridge):** Centralized database configuration using the `pg` (node-postgres) pool to manage secure and efficient connections to PostgreSQL.
+3. **`pages/api/products.js` (Product Service):** A dedicated backend API route that queries the PostgreSQL `products` table and serves data to the UI.
+4. **`pages/api/order.js` (Order Producer):** This acts as the **Message Producer**. When an order is placed, it:
+* Saves the transaction details into the `orders` table.
+* Publishes an event to the **RabbitMQ** message broker.
+
+
+5. **`microservices/customer-service/` (NestJS Logic):** Represents a standalone **NestJS Consumer** that listens for order events via RabbitMQ to process background tasks like customer notifications or loyalty sync.
+6. **`docker-compose.yml` (Infrastructure):** Automates the setup of the entire environment, including the database and message broker.
+
+---
+
+## 🛠️ Tech Stack & NPM Packages
+
+* **Frontend:** Next.js (React)
+* **Backend:** Node.js (Next API Routes) & NestJS (Microservices)
+* **Database:** PostgreSQL
+* **Message Broker:** RabbitMQ
+* **DevOps:** Docker & Docker Compose
+
+### Required Packages:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install pg amqplib
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## ⚙️ Setup & Installation Guide
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### 1. Database Configuration (PostgreSQL)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+Open **pgAdmin** or any SQL terminal and execute the following commands to set up the `kushal_store` database:
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Create Products Table & Insert Data:**
 
-## Learn More
+```sql
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    image_url TEXT
+);
 
-To learn more about Next.js, take a look at the following resources:
+INSERT INTO products (name, price, image_url) VALUES 
+('Exclusive Shirt', 1200, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRykVxiUCwzP628M6IW7zBG0qVYRmRrpbYUQA&s');
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Create Orders Table:**
 
-## Deploy on Vercel
+```sql
+CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    product_name VARCHAR(255),
+    price DECIMAL(10, 2),
+    image_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+### 2. Infrastructure Setup (Docker)
+
+Ensure Docker Desktop is running, then start the services:
+
+```bash
+docker-compose up -d
+
+```
+
+*This will automatically launch PostgreSQL and RabbitMQ containers.*
+
+### 3. Application Setup
+
+Update the credentials in `lib/db.js`:
+
+```javascript
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'kushal_store',
+  password: 'YOUR_PASSWORD',
+  port: 5432,
+});
+
+```
+
+### 4. Running the Project
+
+```bash
+# Start the Next.js App
+npm run dev
+
+```
+
+---
+
+## 📂 Project Structure Demo
+
+```text
+kushal-store/
+├── docker-compose.yml       # Orchestrates PostgreSQL & RabbitMQ
+├── lib/
+│   └── db.js                # Database Connection Pool
+├── pages/
+│   ├── api/
+│   │   ├── products.js      # Product Fetching API
+│   │   └── order.js         # Order Producer (RabbitMQ + DB)
+│   ├── index.js             # Frontend Homepage
+│   └── checkout.js          # Checkout & Payment UI
+├── microservices/
+│   └── customer-service/    # NestJS Consumer Logic
+├── package.json             # Dependencies
+└── README.md                # Documentation
+
+```
+
+
+
+## Demo Video Link: `https://youtu.be/ai2BXx_4K6A`
+
+
+---
+
+**Developed and Coded by Kushal Ghosh**
