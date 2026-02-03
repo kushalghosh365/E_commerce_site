@@ -7,15 +7,41 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    // ডাটাবেস থেকে প্রোডাক্ট ফেচ করা
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
-        
         if (Array.isArray(data)) {
           setProducts(data);
         }
       })
       .catch(err => console.error("Error fetching products:", err));
+
+    // Swiper.js স্লাইডার সেটআপ (Next.js এর জন্য ক্লায়েন্ট সাইড লোডিং)
+    const script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    script.onload = () => {
+      new window.Swiper(".mySwiper", {
+        loop: true,
+        autoplay: {
+          delay: 4000,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        effect: "fade",
+        fadeEffect: { crossFade: true },
+      });
+    };
   }, []);
 
   const handleBuyNow = (product) => {
@@ -33,6 +59,8 @@ export default function Home() {
     <div style={{ fontFamily: '"Inter", sans-serif', backgroundColor: '#ffffff', color: '#111' }}>
       <Head>
         <title>Kushal Store | Exclusive Fashion</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet' />
       </Head>
 
       {/* --- HEADER SECTION --- */}
@@ -58,8 +86,48 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* --- MAIN BODY --- */}
-      <main style={{ padding: '60px 8%', minHeight: '80vh' }}>
+      {/* --- SWIPER SLIDER SECTION --- */}
+      <section className="swiper mySwiper" style={{ width: '100%', height: '80vh', backgroundColor: '#f4f4f4' }}>
+        <div className="swiper-wrapper">
+          
+          {/* Slide 1: Office Tech */}
+          <div className="swiper-slide" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', width: '85%', alignItems: 'center', gap: '40px', flexWrap: 'wrap' }}>
+              <div style={{ flex: '1', minWidth: '300px' }}>
+                <span style={{ background: '#ff3c20', color: '#fff', padding: '5px 15px', borderRadius: '4px', fontSize: '12px' }}>NEW ARRIVAL</span>
+                <h2 style={{ fontSize: '3.5rem', margin: '20px 0', lineHeight: '1.1' }}>Modern Work <br/> Solutions</h2>
+                <p style={{ color: '#555', marginBottom: '30px' }}>Premium office laptops for peak productivity and style.</p>
+                <a href="#shop" style={{ background: '#000', color: '#fff', padding: '15px 35px', textDecoration: 'none', fontWeight: 'bold', borderRadius: '5px' }}>SHOP NOW</a>
+              </div>
+              <div style={{ flex: '1', display: 'flex', justifyContent: 'center' }}>
+                <img src="https://as2.ftcdn.net/jpg/07/26/62/33/1000_F_726623392_fbluzyTUmBA0PAhQWZFImrUove6rypqC.jpg" style={{ maxWidth: '100%', borderRadius: '10px' }} alt="Laptop" />
+              </div>
+            </div>
+          </div>
+
+          {/* Slide 2: Smart Watches */}
+          <div className="swiper-slide" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', width: '85%', alignItems: 'center', gap: '40px', flexWrap: 'wrap' }}>
+              <div style={{ flex: '1' }}>
+                <span style={{ background: '#ff3c20', color: '#fff', padding: '5px 15px', borderRadius: '4px', fontSize: '12px' }}>TECH STYLE</span>
+                <h2 style={{ fontSize: '3.5rem', margin: '20px 0', lineHeight: '1.1' }}>Track Your <br/> Success</h2>
+                <p style={{ color: '#555', marginBottom: '30px' }}>Elegant smartwatches that monitor your health 24/7.</p>
+                <a href="#shop" style={{ background: '#000', color: '#fff', padding: '15px 35px', textDecoration: 'none', fontWeight: 'bold', borderRadius: '5px' }}>EXPLORE</a>
+              </div>
+              <div style={{ flex: '1', display: 'flex', justifyContent: 'center' }}>
+                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1999" style={{ maxWidth: '100%', borderRadius: '10px' }} alt="Watch" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div className="swiper-button-next" style={{ color: '#000' }}></div>
+        <div className="swiper-button-prev" style={{ color: '#000' }}></div>
+        <div className="swiper-pagination"></div>
+      </section>
+
+      {/* --- MAIN BODY (COLLECTION) --- */}
+      <main id="shop" style={{ padding: '60px 8%', minHeight: '80vh' }}>
         <h2 style={{ textAlign: 'center', marginBottom: '40px', fontSize: '32px', fontWeight: '700' }}>Our Collection</h2>
         
         <div style={{ 
@@ -72,13 +140,14 @@ export default function Home() {
               border: '1px solid #ddd', 
               padding: '10px', 
               borderRadius: '10px',
-              textAlign: 'center'
+              textAlign: 'center',
+              transition: '0.3s'
             }}>
               <img 
                 src={p.image_url} 
                 width="100%" 
                 alt={p.name} 
-                style={{ borderRadius: '5px' }}
+                style={{ borderRadius: '5px', height: '250px', objectFit: 'cover' }}
               />
               <h3 style={{ marginTop: '15px', fontSize: '1.2rem' }}>{p.name}</h3>
               <p style={{ color: '#e44d26', fontWeight: 'bold', fontSize: '1.2rem', margin: '10px 0' }}>
@@ -117,11 +186,6 @@ export default function Home() {
             <p style={{ color: '#b7b7b7', lineHeight: '1.6' }}>
               The customer is at the heart of our unique business model, which includes design.
             </p>
-            <div style={{ marginTop: '20px' }}>
-              <img src="https://img.icons8.com/color/48/visa.png" width="35" style={{ marginRight: '10px' }} alt="Visa" />
-              <img src="https://img.icons8.com/color/48/mastercard.png" width="35" style={{ marginRight: '10px' }} alt="Mastercard" />
-              <img src="https://img.icons8.com/color/48/paypal.png" width="35" alt="Paypal" />
-            </div>
           </div>
 
           <div style={{ flex: '0.5', minWidth: '150px' }}>
@@ -130,17 +194,6 @@ export default function Home() {
               <li>Clothing Store</li>
               <li>Trending Shoes</li>
               <li>Accessories</li>
-              <li>Sale</li>
-            </ul>
-          </div>
-
-          <div style={{ flex: '0.5', minWidth: '150px' }}>
-            <h4 style={{ marginBottom: '20px', textTransform: 'uppercase' }}>Customer Care</h4>
-            <ul style={{ listStyle: 'none', padding: 0, color: '#b7b7b7', lineHeight: '2' }}>
-              <li>Contact Us</li>
-              <li>Payment Method</li>
-              <li>Delivery</li>
-              <li>Return & Exchange</li>
             </ul>
           </div>
 
