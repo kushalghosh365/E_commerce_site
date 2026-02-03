@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // ডাটাবেস থেকে প্রোডাক্ট ফেচ করা
+   
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
@@ -17,7 +17,7 @@ export default function Home() {
       })
       .catch(err => console.error("Error fetching products:", err));
 
-    // Swiper.js স্লাইডার সেটআপ (Next.js এর জন্য ক্লায়েন্ট সাইড লোডিং)
+   
     const script = document.createElement('script');
     script.src = "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js";
     script.async = true;
